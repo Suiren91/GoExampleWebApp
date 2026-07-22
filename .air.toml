@@ -3,7 +3,8 @@ tmp_dir="tmp"
 
 [build]
 # Just plain old shell command. You could use `make` as well.
-cmd="go build -o ./tmp/main ."
+# TODO: VCS Stampingをオプションで無効にすることで一時的に対処している．本来はユーザーの不一致を直すべき
+cmd="go build -buildvcs=false -o ./tmp/main ."
 # Binary file yields from `cmd`
 bin = "tmp/main"
 
@@ -34,3 +35,4 @@ runner = "green"
 
 [misc]
 clean_on_exit = true
+
