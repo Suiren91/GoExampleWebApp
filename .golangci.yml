@@ -1,0 +1,21 @@
+version: "2"
+linters:
+  default: none
+  enable:
+    - errcheck
+    - gocognit
+    - gocritic
+    - gocyclo
+    - govet
+    - misspell
+    - staticcheck
+    - whitespace
+  settings:
+    gocyclo:
+      min-complexity: 30
+    misspell:
+      locale: US
+formatters:
+  enable:
+    - gofmt
+    - goimports
