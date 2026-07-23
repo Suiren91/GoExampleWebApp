@@ -7,27 +7,31 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"os"
 
+	"github.com/Suiren91/GoExampleWebApp/config"
 	"golang.org/x/sync/errgroup"
 )
 
 func main() {
-	if len(os.Args) != 2 {
-		log.Fatalf("need port number\n")
-	}
-	p := os.Args[1]
-	l, err := net.Listen("tcp", ":"+p)
-	if err != nil {
-		log.Fatalf("failed to listen port: %s", err)
-	}
-	if err := run(context.Background(), l); err != nil {
-		fmt.Printf("failed to terminate server: %v", err)
-		os.Exit(1)
+	if err := run(context.Background()); err != nil {
+		log.Fatalf("failed to terminate server: %v", err)
 	}
 }
 
-func run(ctx context.Context, l net.Listener) error {
+func run(ctx context.Context) error {
+	cfg, err := config.New()
+	if err != nil {
+		return err
+	}
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
+	if err != nil {
+		log.Fatalf("failed to listen port: %v", err)
+	}
+
+	//urlはログ出力用(ロジック内では未使用)
+	url := fmt.Sprintf("http://%s", l.Addr().String())
+	log.Printf("start with: %v", url)
+
 	s := &http.Server{
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			_, _ = fmt.Fprintf(w, "Hello, %s!!", r.URL.Path[1:])
