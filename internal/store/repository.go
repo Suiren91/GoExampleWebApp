@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -33,6 +34,13 @@ type Queryer interface {
 type Repository struct {
 	Clocker clock.Clocker
 }
+
+const (
+	// ErrCodeMySQLDuplicateEntryはMySQLのDUPLICATEエラーコード
+	ErrCodeMySQLDuplicateEntry = 1062
+)
+
+var ErrAlreadyEntry = errors.New("duplicate entry")
 
 func New(ctx context.Context, cfg *config.Config) (*sqlx.DB, func(), error) {
 	// sqlx.Connectを使うと内部でpingする
