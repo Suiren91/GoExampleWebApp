@@ -13,7 +13,7 @@ require (
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/lestrrat-go/jwx/v2 v2.1.7
 	github.com/matryer/moq v0.7.1
-	golang.org/x/crypto v0.53.0
+	golang.org/x/crypto v0.54.0
 	golang.org/x/sync v0.22.0
 )
 
@@ -35,6 +35,6 @@ require (
 	github.com/segmentio/asm v1.2.1 // indirect
 	golang.org/x/mod v0.38.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
-	golang.org/x/text v0.38.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 	golang.org/x/tools v0.48.0 // indirect
 )

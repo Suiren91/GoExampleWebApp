@@ -6,7 +6,10 @@ import (
 	"github.com/Suiren91/GoExampleWebApp/internal/entity"
 )
 
-//go:generate go run github.com/matryer/moq -out moq_test.go . ListTasksService AddTaskService RegisterUserService
+//go:generate go run github.com/matryer/moq -out moq_test.go . ListTasksService AddTaskService RegisterUserService LoginService
+type LoginService interface {
+	Login(ctx context.Context, name, pw string) (string, error)
+}
 type ListTasksService interface {
 	ListTasks(ctx context.Context) (entity.Tasks, error)
 }

@@ -90,7 +90,7 @@ func (j *JWTer) GenerateToken(ctx context.Context, u entity.User) ([]byte, error
 
 // GetToken はリクエストからトークンを取得して返却する
 func (j *JWTer) GetToken(ctx context.Context, r *http.Request) (jwt.Token, error) {
-	token, err := jwt.ParseRequest(r, jwt.WithKey(jwa.RS256, j.PublicKey, jwt.WithValidate(false)))
+	token, err := jwt.ParseRequest(r, jwt.WithKey(jwa.RS256, j.PublicKey), jwt.WithValidate(false))
 	if err != nil {
 		return nil, err
 	}

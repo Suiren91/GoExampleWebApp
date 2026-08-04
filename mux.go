@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Suiren91/GoExampleWebApp/config"
+	"github.com/Suiren91/GoExampleWebApp/internal/auth"
 	"github.com/Suiren91/GoExampleWebApp/internal/clock"
 	"github.com/Suiren91/GoExampleWebApp/internal/handler"
 	"github.com/Suiren91/GoExampleWebApp/internal/service"
@@ -24,7 +25,25 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	if err != nil {
 		return nil, cleanup, err
 	}
-	r := &store.Repository{Clocker: clock.RealClocker{}}
+	clocker := clock.RealClocker{}
+	r := &store.Repository{Clocker: clocker}
+	rcli, err := store.NewKVS(ctx, cfg)
+	if err != nil {
+		return nil, cleanup, err
+	}
+	jwter, err := auth.NewJWTer(rcli, clocker)
+	if err != nil {
+		return nil, cleanup, err
+	}
+	l := &handler.Login{
+		Service: &service.Login{
+			DB:             db,
+			Repo:           r,
+			TokenGenerator: jwter,
+		},
+		Validator: v,
+	}
+	mux.Post("/login", l.ServeHTTP)
 	at := &handler.AddTask{
 		Service:   &service.AddTask{DB: db, Repo: r},
 		Validator: v,
