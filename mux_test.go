@@ -1,17 +1,30 @@
 package main
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/Suiren91/GoExampleWebApp/config"
 )
 
 func TestNewMux(t *testing.T) {
+	ctx := context.Background()
+	cfg, err := config.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	sut, cleanup, err := NewMux(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(cleanup)
+
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/health", nil)
 
-	sut := NewMux()
 	sut.ServeHTTP(w, r)
 	resp := w.Result()
 

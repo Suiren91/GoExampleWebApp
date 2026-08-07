@@ -4,41 +4,45 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Suiren91/GoExampleWebApp/internal/entity"
 	"github.com/go-playground/validator/v10"
 )
 
-type AddTask struct {
-	Service   AddTaskService
+type Login struct {
+	Service   LoginService
 	Validator *validator.Validate
 }
 
-func (at *AddTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (l *Login) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	var b struct {
-		Title string `json:"title" validate:"required"`
+	var body struct {
+		UserName string `json:"user_name" validate:"required"`
+		Password string `json:"password" validate:"required"`
 	}
-	if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		RespondJSON(ctx, w, &ErrResponse{
 			Message: err.Error(),
 		}, http.StatusInternalServerError)
 		return
 	}
-	err := at.Validator.Struct(b)
+	err := l.Validator.Struct(body)
 	if err != nil {
 		RespondJSON(ctx, w, &ErrResponse{
 			Message: err.Error(),
 		}, http.StatusBadRequest)
 		return
 	}
-	t, err := at.Service.AddTask(ctx, b.Title)
+	jwt, err := l.Service.Login(ctx, body.UserName, body.Password)
 	if err != nil {
-		RespondJSON(ctx, w, ErrResponse{
+		RespondJSON(ctx, w, &ErrResponse{
 			Message: err.Error(),
 		}, http.StatusInternalServerError)
+		return
 	}
 	rsp := struct {
-		ID entity.TaskID `json:"id"`
-	}{ID: t.ID}
+		AccessToken string `json:"access_token"`
+	}{
+		AccessToken: jwt,
+	}
+
 	RespondJSON(ctx, w, rsp, http.StatusOK)
 }
